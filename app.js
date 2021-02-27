@@ -13,11 +13,11 @@ const Review = require('./models/review');
 const { join } = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-const User = require('./models/user')
+const User = require('./models/user');
 //Routes required
-const recipesRoutes = require('./routes/recipes')// These is the route import for recipes pages
-const reviewsRoutes = require('./routes/reviews')// These is the route import for reviews routes
-const userRoutes = require('./routes/users')
+const recipesRoutes = require('./routes/recipes');// These is the route import for recipes pages
+const reviewsRoutes = require('./routes/reviews');// These is the route import for reviews routes
+const userRoutes = require('./routes/users');
 
 
 //Mongoose Connection 

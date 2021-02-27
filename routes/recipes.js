@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressErrors');
 const Recipe = require('../models/recipe');// This is for the database model
 const { recipeSchema} = require('../schemas.js');
+const {isLoggedIn} = require('../middleware');
 
 const validateRecipe = (req, res, next) => {
     //console.log(results);
@@ -25,12 +26,12 @@ router.get('/', catchAsync(async (req, res) =>{
 }));
 
 //Render form to create a recipe
-router.get('/new', (req, res) =>{
+router.get('/new', isLoggedIn, (req, res) =>{
     res.render('recipes/new');
 });
 
 //Insert new Recipe
-router.post('/', validateRecipe, catchAsync(async (req, res) =>{
+router.post('/', isLoggedIn, validateRecipe, catchAsync(async (req, res) =>{
     // if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const recipe = new Recipe(req.body.recipe)
     await recipe.save();
@@ -50,7 +51,7 @@ router.get('/:id', catchAsync(async (req, res) =>{
 }));
 
 // Edit recipe ROUTE
-router.get('/:id/edit', catchAsync(async (req, res) =>{
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) =>{
     const recipe = await Recipe.findById(req.params.id);
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
@@ -60,7 +61,7 @@ router.get('/:id/edit', catchAsync(async (req, res) =>{
 }));
 
 //Update a recipe
-router.put('/:id', validateRecipe, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateRecipe, catchAsync(async (req, res) => {
     const { id } = req.params;
     const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
     req.flash('success', 'Successfully updated a recipe');
@@ -68,7 +69,7 @@ router.put('/:id', validateRecipe, catchAsync(async (req, res) => {
 }));
 
 // Delete a recipe
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Recipe.findByIdAndDelete(id);
     req.flash('success', 'Recipe Deleted');
