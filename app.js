@@ -11,9 +11,13 @@ const ExpressError = require('./utils/ExpressErrors');
 const Recipe = require('./models/recipe');// This is for the database model
 const Review = require('./models/review');
 const { join } = require('path');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user')
 //const recipe = require('./models/recipe');
 const recipes = require('./routes/recipes')// These is the route import for recipes pages
 const reviews = require('./routes/reviews')// These is the route import for reviews routes
+
 
 //Mongoose Connection 
 mongoose.connect('mongodb://localhost:27017/rec-jar', {
@@ -52,6 +56,14 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+//passport config
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+//serialize and deserialize user(How to store and unstore user)
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
