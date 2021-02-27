@@ -32,8 +32,8 @@ router.get('/new', isLoggedIn, (req, res) =>{
 
 //Insert new Recipe
 router.post('/', isLoggedIn, validateRecipe, catchAsync(async (req, res) =>{
-    // if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const recipe = new Recipe(req.body.recipe)
+    recipe.author = req.user._id;
     await recipe.save();
     req.flash('success', 'Successfully made a new campground!');
     res.redirect(`recipes/${recipe._id}`);
@@ -42,7 +42,8 @@ router.post('/', isLoggedIn, validateRecipe, catchAsync(async (req, res) =>{
 // Show recipe detail route - GET
 router.get('/:id', catchAsync(async (req, res) =>{
     //find recipe using url paremeter id
-    const recipe = await Recipe.findById(req.params.id).populate('reviews');
+    const recipe = await Recipe.findById(req.params.id).populate('reviews').populate('author');
+    console.log(recipe);
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
