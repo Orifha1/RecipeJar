@@ -14,9 +14,10 @@ const { join } = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user')
-//const recipe = require('./models/recipe');
-const recipes = require('./routes/recipes')// These is the route import for recipes pages
-const reviews = require('./routes/reviews')// These is the route import for reviews routes
+//Routes required
+const recipesRoutes = require('./routes/recipes')// These is the route import for recipes pages
+const reviewsRoutes = require('./routes/reviews')// These is the route import for reviews routes
+const userRoutes = require('./routes/users')
 
 
 //Mongoose Connection 
@@ -70,8 +71,11 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     next();
 })
-app.use('/recipes', recipes);
-app.use('/recipes/:id/reviews', reviews);
+
+//Routes
+app.use('/', userRoutes);
+app.use('/recipes', recipesRoutes);
+app.use('/recipes/:id/reviews', reviewsRoutes);
 
 
 //Landing Page Route - GET
@@ -91,7 +95,6 @@ app.use((err, req, res, next) => {
     if (!err.message) err.message = 'Oh No, Something Went Wrong!'
     res.status(statusCode).render('error', { err })
 })
-
 
 //Listening Port for Server
 app.listen(3000, () => {
