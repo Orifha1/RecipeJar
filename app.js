@@ -19,7 +19,6 @@ const recipesRoutes = require('./routes/recipes');// These is the route import f
 const reviewsRoutes = require('./routes/reviews');// These is the route import for reviews routes
 const userRoutes = require('./routes/users');
 
-
 //Mongoose Connection 
 mongoose.connect('mongodb://localhost:27017/rec-jar', {
     useNewUrlParser: true,
@@ -78,7 +77,6 @@ app.use('/', userRoutes);
 app.use('/recipes', recipesRoutes);
 app.use('/recipes/:id/reviews', reviewsRoutes);
 
-
 //Landing Page Route - GET
 app.get('/', (req, res) =>{
     res.render('home');
@@ -87,17 +85,16 @@ app.get('/', (req, res) =>{
 //For every single request
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404));
-})
+});
 
 //Error handling
 app.use((err, req, res, next) => {
-
     const { statusCode = 500 } = err;
     if (!err.message) err.message = 'Oh No, Something Went Wrong!'
     res.status(statusCode).render('error', { err })
-})
+});
 
 //Listening Port for Server
 app.listen(3000, () => {
     console.log("APP IS LISTENING ON PORT 3000!")
-})
+});
