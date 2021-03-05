@@ -1,22 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const ExpressError = require('../utils/ExpressErrors');
 const Recipe = require('../models/recipe');// This is for the database model
-const { recipeSchema} = require('../schemas.js');
-const {isLoggedIn} = require('../middleware');
 
-const validateRecipe = (req, res, next) => {
-    //console.log(results);
-    const {error} = recipeSchema.validate(req.body);
+const {isLoggedIn, isAuthor, validateRecipe} = require('../middleware');
 
-    if(error){
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400);
-    }else{
-        next();
-    }
-}
 
 //Index Page route - GET
 router.get('/', catchAsync(async (req, res) =>{
@@ -52,7 +40,7 @@ router.get('/:id', catchAsync(async (req, res) =>{
 }));
 
 // Edit recipe ROUTE
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) =>{
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) =>{
     const { id } = req.params;
     const recipe = await Recipe.findById(id);
     //const recipe = await Recipe.findById(req.params.id);
@@ -60,29 +48,19 @@ router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) =>{
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
     }
-    if(!recipe.author.equals(req.user._id)){
-        req.flash('error', 'You do not have permision to do that');
-        return res.redirect(`/recipes/${recipe._id}`);
-    };
     res.render('recipes/edit', {recipe});
 }));
 
 //Update a recipe
-router.put('/:id', isLoggedIn, validateRecipe, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateRecipe, catchAsync(async (req, res) => {
     const { id } = req.params;
-    //await Recipe.findById(id)
-    const recipe = await Recipe.findById(id);
-    if(!recipe.author.equals(req.user._id)){
-        req.flash('error', 'You do not have permision to do that');
-        return res.redirect(`/recipes/${recipe._id}`);
-    };
-    const rec = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
+    const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
     req.flash('success', 'Successfully updated a recipe');
     res.redirect(`/recipes/${recipe._id}`);
 }));
 
 // Delete a recipe
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Recipe.findByIdAndDelete(id);
     req.flash('success', 'Recipe Deleted');

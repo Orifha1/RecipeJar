@@ -35,8 +35,9 @@
          
         </div>
         <div class="col-4">
-            <h2>Leave a Review</h2>
 
+            <% if(currentUser){ %>
+            <h2>Leave a Review</h2>
             <form action="/recipes/<%=recipe._id%>/reviews" class="mb-3 validated-form" method="POST" novalidate>
                 <div class="mb-3">
                     <label class="form-label" for="">Rating</label>
@@ -51,6 +52,7 @@
                 </div>
                 <button class="btn btn-success">Submit</button>
             </form>
+            <% } %>
             <%for (let review of recipe.reviews) {%>
                 <div class="mb-3 card">
                     <div class="card-body">
