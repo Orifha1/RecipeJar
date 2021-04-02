@@ -1,9 +1,12 @@
 const { recipeSchema, reviewSchema} = require('./schemas.js');
 const ExpressError = require('./utils/ExpressErrors');
 const Recipe = require('./models/recipe');
+const Review = require('./models/review');
 
-
+//Check if user is logged in
+// This might have a problem, have to check it again.
 module.exports.isLoggedIn = (req, res, next) =>{
+    //const { id } = req.params;
     if(!req.isAuthenticated()){
         req.session.returnTo = req.originalUrl
         req.flash('error','You must be signed in first');
@@ -34,7 +37,17 @@ module.exports.isAuthor = async(req, res, next) =>{
     }
     next();
 }
-
+// Check if the person perfoming the activity is the the review author author
+module.exports.isReviewAuthor = async(req, res, next) =>{
+    const { id, reviewId } = req.params;
+    const review = await Review.findById(reviewId);
+    if(!review.author.equals(req.user._id)){
+        req.flash('error', 'You do not have permision to do that');
+        //return res.redirect(`/recipes/${review._id}`);
+        return res.redirect(`/recipes/${id}`);
+    }
+    next();
+}
 module.exports.validateReview = (req, res, next) => {
    
     //console.log(results);

@@ -10,7 +10,7 @@ const {isLoggedIn, isAuthor, validateRecipe} = require('../middleware');
 router.get('/', catchAsync(async (req, res) =>{
     //find all the Recipes
     const recipes = await Recipe.find({});
-    res.render('recipes/index', {recipes})
+    res.render('recipes/index', {recipes});
 }));
 
 //Render form to create a recipe
@@ -30,7 +30,12 @@ router.post('/', isLoggedIn, validateRecipe, catchAsync(async (req, res) =>{
 // Show recipe detail route - GET
 router.get('/:id', catchAsync(async (req, res) =>{
     //find recipe using url paremeter id
-    const recipe = await Recipe.findById(req.params.id).populate('reviews').populate('author');
+    const recipe = await Recipe.findById(req.params.id).populate({
+        path: 'reviews',
+        populate: {
+            path: 'author'
+        }
+    }).populate('author');
     console.log(recipe);
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
