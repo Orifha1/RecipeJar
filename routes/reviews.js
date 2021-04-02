@@ -18,7 +18,7 @@ router.post('/', isLoggedIn, validateReview, catchAsync(async (req, res) => {
     res.redirect(`/recipes/${recipe._id}`);
 
 }));
-
+// Delete review in the recipe show page.
 router.delete('/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Recipe.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });

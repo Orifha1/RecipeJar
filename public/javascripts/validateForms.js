@@ -1,3 +1,4 @@
+  //This functionality is provided by bootstrab
   // Example starter JavaScript for disabling form submissions if there are invalid fields
   (function () {
     'use strict'
