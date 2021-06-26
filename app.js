@@ -79,7 +79,7 @@ app.use('/recipes/:id/reviews', reviewsRoutes);
 
 //Landing Page Route - GET
 app.get('/', (req, res) =>{
-    res.render('home');
+    return res.redirect('/recipes');
 });
 
 //For every single request
