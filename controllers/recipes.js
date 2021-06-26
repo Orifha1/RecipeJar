@@ -13,9 +13,12 @@ module.exports.renderNewForm = (req, res) =>{
 }
 
 module.exports.createRecipe = async (req, res) =>{
+   
     const recipe = new Recipe(req.body.recipe)
+    recipe.images =  req.files.map(f => ({ url:f.path, filename:f.filename }))
     recipe.author = req.user._id;
     await recipe.save();
+    console.log(recipe);
     req.flash('success', 'Successfully made a new campground!');
     res.redirect(`recipes/${recipe._id}`);
 }
@@ -50,6 +53,9 @@ module.exports.renderEditForm = async (req, res) =>{
 module.exports.updateRecipe = async (req, res) => {
     const { id } = req.params;
     const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
+    const img = req.files.map(f => ({ url:f.path, filename:f.filename }));
+    recipe.images.push(...img);
+    await recipe.save();
     req.flash('success', 'Successfully updated a recipe');
     res.redirect(`/recipes/${recipe._id}`);
 }

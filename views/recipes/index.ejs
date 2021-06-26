@@ -9,7 +9,7 @@
                 <%for(let recipe of recipes) {%>
                 <div class="col-md-4 mb-3">
                     <div class="card text-justify" style="width: 20rem;">
-                        <img class="card-img-top" alt="" src="<%=recipe.image%>">
+                        <img class="card-img-top" alt="" src="<%=recipe.images[0].url%>">
                         <div class="card-body overflow-hidden">
                             <h5 class="card-title"><%= recipe.title %> </h5>
                             <p class="card-text"><%= recipe.description %></p>
