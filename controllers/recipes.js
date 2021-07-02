@@ -1,6 +1,7 @@
 //This folder is created to cleen up the code so that the functionality can be called as methods in the routes folder.
 
 const Recipe = require('../models/recipe');// This is for the database model
+const { cloudinary } = require("../cloudinary");
 
 module.exports.index = async (req, res) =>{
     //find all the Recipes
@@ -55,6 +56,12 @@ module.exports.updateRecipe = async (req, res) => {
     const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
     const img = req.files.map(f => ({ url:f.path, filename:f.filename }));
     recipe.images.push(...img);
+    if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
+        await recipe.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
+    }
     await recipe.save();
     req.flash('success', 'Successfully updated a recipe');
     res.redirect(`/recipes/${recipe._id}`);
