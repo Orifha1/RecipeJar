@@ -4,7 +4,7 @@
 <div class="row">
     <h1 class="text-center">New Recipe</h1>
     <div class="col-6 offset-3">
-        <form action="/recipes" method="POST" novalidate class="validated-form">
+        <form action="/recipes" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="recipe[title]" required>
@@ -19,13 +19,15 @@
                     Looks good!
                   </div>
             </div>
-            <div class="mb-3">
+            
+            <!-- <input type="file" name="image" id="" multiple> -->
+            <!-- <div class="mb-3">
                 <label class="form-label" for="image">Image Url</label>
                 <input class="form-control" type="text" id="image" name="recipe[image]" required>
                 <div class="valid-feedback">
                     Looks good!
                   </div>
-            </div>
+            </div> -->
             <div class="mb-3">
                 <label class="form-label" for="price">recipe Price</label>
                 <div class="input-group">
@@ -45,6 +47,10 @@
                     Looks good!
                   </div>
             </div>
+            <div class="mb-3" custom-file>
+                <label for="image" class="form-label">Add Image(s)</label>
+                <input class="form-control" type="file" id="image" name="image" multiple>
+              </div>
             <div class="mb-3">
                 <button class="btn btn-success">Add recipe</button>
             </div>
