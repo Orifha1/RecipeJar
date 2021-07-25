@@ -1,0 +1,65 @@
+<% layout('layouts/boilerplate')%>
+	<div class="row text-center">
+		<div class="mb-1">
+			<h1>
+				<%= user.username %>
+			</h1>
+			<div class="thumbnail mb-1">
+				<img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt class="ui-w-100 rounded-circle mb-3">
+				<div class="caption"><a href="mailto:<%= user.email %>">
+						<%= user.email %>
+					</a></div>
+			</div>
+			<% if(currentUser && currentUser._id.equals(user._id)) { %>
+				<div class="card-body">
+					<a class="card-link btn btn-info btn-sm">Update Profile</a>
+					<form class="d-inline" method="POST">
+						<button class="btn btn-outline-danger btn-sm">Delete Profile</button>
+					</form>
+				</div>
+			<% } %>
+		</div>
+		<hr class="mb-3" id="profileHR">
+		<div class="mb-3">
+			<h3 class="mb-2">
+				<%= user.username %>'s recipes:
+			</h3>
+
+			<ul>
+				<div class="row" style="width: 85%; margin: auto;">
+					<% recipes.forEach(function(recipe) { %>
+						<div class="col-md-4 mb-3" id="recipeCards">
+							<div class="card text-justify" style="width: 20rem;">
+								<img class="card-img-top" alt="" src="<%=recipe.images[0].url%>">
+								<div class="card-body overflow-hidden">
+									<h5 class="card-title">
+										<%= recipe.title %>
+									</h5>
+									<p class="card-text">
+										<%= recipe.description %>
+									</p>
+									<p class="card-text">
+										<small class="text-muted">
+											<%= recipe.location%>
+										</small>
+									</p>
+									<a class="btn btn-primary" href="/recipes/<%=recipe._id%>">View <%=recipe.title%>
+											</a>
+								</div>
+							</div>
+						</div>
+						<% }) %>
+				</div>
+				<a href="/recipes/new" class="material-icons floating-btn">add</a>
+				<div class="label-container">
+					<div class="label-text">Add Recipe</div>
+					<i class="fa fa-play label-arrow"></i>
+				</div>
+			</ul>
+			<!-- <ul>
+		<% recipes.forEach(function(recipe) { %>
+			<li><a href="/recipes/<%= recipe.id %>"><%= recipe.title %></a></li>
+		<% }) %>
+		</ul> -->
+		</div>
+	</div>

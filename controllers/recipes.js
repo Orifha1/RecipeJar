@@ -19,7 +19,6 @@ module.exports.createRecipe = async (req, res) =>{
     recipe.images =  req.files.map(f => ({ url:f.path, filename:f.filename }))
     recipe.author = req.user._id;
     await recipe.save();
-    console.log(recipe);
     req.flash('success', 'Successfully made a new campground!');
     res.redirect(`recipes/${recipe._id}`);
 }
@@ -32,7 +31,6 @@ module.exports.showRecipe = async (req, res) =>{
             path: 'author'
         }
     }).populate('author');//populate author the recipe shown.
-    console.log(recipe);
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
