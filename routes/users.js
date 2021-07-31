@@ -57,7 +57,7 @@ router.get("/users/:id", async (req, res) => {
 //   });
 
 
-//USER EDIT ROUTE
+//USER EDIT ROUTE.
 // router.get('/users/:id/edit', middleware.checkProfileOwnership, function (req, res) {
 //   User.findById(req.params.id, function (err, foundUser) {
 //       if(err) {
