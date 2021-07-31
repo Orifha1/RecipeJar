@@ -1,26 +1,48 @@
 <% layout('layouts/boilerplate')%>
-<h1>Register</h1>
-<form action="/register" method="POST" class="validated-form" novalidate>
+<div class="container">
+<h1 class="text-center">Register</h1>
+<div class="d-flex justify-content-center container p-3" id="formContent">
+<form action="/register" method="POST" class="validated-form border border-dark p-5 w-75 p-3 rounded" enctype="multipart/form-data" novalidate>
     <div class="mb-3">
-        <label class="form-label" for="username">Username</label>
+        <label class="form-label" for="username">Username *</label>
         <input class="form-control" type="text" id="username" name="username" required>
         <div class="valid-feedback">
             Looks good!
         </div>
     </div>
     <div class="mb-3">
-        <label class="form-label" for="email">Email</label>
+        <label class="form-label" for="email">Email *</label>
         <input class="form-control" type="email" id="email" name="email" required>
         <div class="valid-feedback">
             Looks good!
         </div>
     </div>
     <div class="mb-3">
-        <label class="form-label" for="password">Password</label>
+        <label class="form-label" for="password">Password *</label>
         <input class="form-control" type="password" id="password" name="password" required>
         <div class="valid-feedback">
             Looks good!
         </div>
     </div>
+    <!-- <div class="mb-3">
+        <label class="form-label" for="firstName">Firstname *</label>
+        <input class="form-control" type="text" id="firstName" name="firstName" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="lastName">Lastname *</label>
+        <input class="form-control" type="text" id="lastName" name="lastName" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div> -->
+    <div class="mb-3" custom-file>
+        <label for="image" class="form-label">Add Profile Image</label>
+        <input class="form-control" type="file" id="image" name="image">
+    </div>
     <button class="btn btn-success">Register</button>
 </form>
+</div>
+</div>

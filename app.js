@@ -70,7 +70,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
-    if(!['/login'].includes(req.originalUrl)){
+    if(!['/login', '/register'].includes(req.originalUrl)){
         req.session.returnTo = req.originalUrl; // store where the user is is coming from in the session. 
     } 
     res.locals.currentUser = req.user;

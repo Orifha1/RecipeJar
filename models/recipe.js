@@ -10,7 +10,7 @@ const ImageSchema = new Schema({
 
 //using to a virtual property
 ImageSchema.virtual('thumbnail').get(function () {
-    return this.url.replace('/upload', '/upload/w_200');
+    return this.url.replace('/upload', '/upload/w_200,h_200');
 });
 
 const recipeSchema = new Schema({
