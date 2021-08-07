@@ -1,6 +1,7 @@
 
 const User = require('../models/user');
 const { cloudinary } = require("../cloudinary");
+const recipes = require('../controllers/recipes'); 
 
 
 module.exports.renderRegister = (req,res) =>{
@@ -43,6 +44,30 @@ module.exports.showRecipe = async (req, res) =>{
 
 module.exports.renderLogin = (req, res) => {
     res.render('users/login');
+}
+
+module.exports.renderUserEditForm = async (req, res) =>{
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if(!user){
+        req.flash('error', 'Can not find that User');
+        return res.redirect('/recipes');
+    }
+    res.render('users/edit', {user});
+}
+
+module.exports.updateUser = async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findByIdAndUpdate(id, req.body.user);
+    //console.log(user);
+        if (!user) {
+            req.flash('error', 'Can not find that User');
+            res.redirect('/recipes');
+        }
+        await user.save();
+        req.flash('success', 'Your profile has been updated');
+        res.redirect(`/users/${user._id}`);
+  
 }
 
 module.exports.Login = (req, res) => {

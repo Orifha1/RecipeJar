@@ -5,6 +5,7 @@ const Recipe = require('../models/recipe');// This is for the database model
 const User = require('../models/user');// This is for the database model
 const recipes = require('../controllers/recipes'); 
 const catchAsync = require('../utils/catchAsync');
+const {isLoggedIn, checkProfileOwnership, isAuthor, validateRecipe} = require('../middleware');
 const passport = require('passport');
 const users = require('../controllers/users');// This is for the controller
 const multer  = require('multer');
@@ -31,6 +32,11 @@ router.route('/login')
 //logout user
 router.get('/logout', users.Logout);
 
+// edit user
+router.get('/users/:id/edit', isLoggedIn, checkProfileOwnership, catchAsync(users.renderUserEditForm));
+
+// update user
+router.put('/users/:id', isLoggedIn, checkProfileOwnership, upload.array('image'), catchAsync(users.updateUser)) //Update a User
 //forgot password
 router.get('/forgot', function(req, res){
   res.render('users/forgot');
