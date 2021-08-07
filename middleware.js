@@ -2,6 +2,7 @@ const { recipeSchema, reviewSchema} = require('./schemas.js');
 const ExpressError = require('./utils/ExpressErrors');
 const Recipe = require('./models/recipe');
 const Review = require('./models/review');
+const User = require('./models/user');// This is for the database model
 
 //Check if user is logged in
 // This might have a problem, have to check it again.
@@ -15,6 +16,32 @@ module.exports.isLoggedIn = (req, res, next) =>{
     next();
 }
 
+//Middle Ware Obj to add to middleware file
+ 
+module.exports.checkProfileOwnership = function (req, res, next) {
+    //if user is logged in
+    if (req.isAuthenticated()) {
+        User.findById(req.params.id, function (err, foundUser) {
+            if (err || !foundUser) {
+                req.flash('error', 'Something Went Wrong!');
+                res.redirect('/recipes');
+            } else {
+                 //if user is logged in, do they own the profile?
+                if (foundUser.equals(req.user._id)) {
+                    next();
+                } else {
+                    //otherwise redirect
+                    req.flash('error', "You don't have permission to do that.");
+                    res.redirect('/recipes');
+                };
+            };
+        });
+    } else {
+        //if not, redirect.
+        req.flash('error', "You need to be logged in to do that.");
+        res.redirect('/recipes');
+    };
+};
 module.exports.validateRecipe = (req, res, next) => {
     //console.log(results);
     const {error} = recipeSchema.validate(req.body);
