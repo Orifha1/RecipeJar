@@ -89,6 +89,11 @@ app.get('/', (req, res) =>{
     return res.redirect('/recipes');
 });
 
+//About us page. 
+app.get('/about', (req, res) =>{
+    return res.render('about');
+});
+
 //For every single request
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404));

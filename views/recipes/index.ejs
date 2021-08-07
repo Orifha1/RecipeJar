@@ -4,19 +4,22 @@
     <!-- <div>
         <a href="/recipes/new">Add Recipe</a>
     </div> -->
-    <ul>
+
+    <ul class="justify-content-center">
             <div class="row" style="width: 85%; margin: auto;">
                 <%for(let recipe of recipes) {%>
-                <div class="col-md-4 mb-3">
-                    <div class="card text-justify" style="width: 20rem;">
-                        <img class="card-img-top" alt="" src="<%=recipe.images[0].url%>">
-                        <div class="card-body overflow-hidden">
+                <div class="col-sm-6 col-md-4 mb-3 ml-1">
+                    <div class="card text-justify" style="width: 20rem;" id="cardRecipes">
+                        <img class="card-img-top img-responsive" id="cardImage" alt="" src="<%=recipe.images[0].url%>">
+                        <div class="card-body d-flex flex-column overflow-hidden">
                             <h5 class="card-title"><%= recipe.title %> </h5>
-                            <p class="card-text"><%= recipe.description %></p>
-                            <p class="card-text">
-                                <small class="text-muted"><%= recipe.location%></small>
-                            </p>
-                            <a class="btn btn-primary" href="/recipes/<%=recipe._id%>">View <%=recipe.title%></a>
+                            <p class="card-text" id="cardRecipesPar"><%= recipe.description %></p>
+                            <div class="mt-auto p-1">
+                                <p class="card-text">
+                                    <small class="text-muted"><%= recipe.location%></small>
+                                </p> 
+                                <a class="btn btn-primary" style="width: 100%;" href="/recipes/<%=recipe._id%>">View <%=recipe.title%></a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,3 +50,4 @@
             </div>
         <% } %> -->
     </ul>
+    <%- include('../partials/footer')%>
