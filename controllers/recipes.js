@@ -4,9 +4,18 @@ const Recipe = require('../models/recipe');// This is for the database model
 const { cloudinary } = require("../cloudinary");
 
 module.exports.index = async (req, res) =>{
-    //find all the Recipes
-    const recipes = await Recipe.find({});
-    res.render('recipes/index', {recipes});
+    let page =  parseInt(req.query.page);
+    const pageSize=12;
+    if(!page){
+        page =1;
+    }
+    const skip =(page -1) * parseInt(pageSize);
+    
+    //find all the Recipes .sort({ _id : -1 })
+    const recipes = await Recipe.find({})
+                    .limit(pageSize * 1)
+                    .skip(skip);
+    res.render('recipes/index', {recipes, page});
 }
 
 module.exports.renderNewForm = (req, res) =>{
