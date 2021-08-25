@@ -1,12 +1,21 @@
 const Review = require('../models/review');// This is for the database model
 const Recipe = require('../models/recipe');// This is for the database model
+const User = require('../models/user');
+
 module.exports.createReview = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
+    const user = await User.findById(req.user._id); 
+
     const review = new Review(req.body.review);
     review.author = req.user._id;
+
     recipe.reviews.push(review);
+    user.reviews.push(review);// push reviews to user in order to delete reviews if profile is deleted.
+
     await review.save();
     await recipe.save();
+    await user.save();
+
     req.flash('success', 'New review created');
     res.redirect(`/recipes/${recipe._id}`);
 
