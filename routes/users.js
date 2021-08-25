@@ -157,7 +157,8 @@ router.post('/reset/:token', function(req, res) {
 });
 // User profile
 router.get("/users/:id", async (req, res) => {
-  const user = await User.findById(req.params.id)
+  const user = await User.findById(req.params.id);
+  console.log(user);
   const recipes = await Recipe.find({}).where('author').equals(user._id);
   res.render("users/show", {user, recipes});
   // for(let rec in recipes){
@@ -166,6 +167,8 @@ router.get("/users/:id", async (req, res) => {
   //   }
   // }
 });
+
+router.delete('/users/:id', isLoggedIn, checkProfileOwnership, catchAsync(users.deleteUser)); // Delete user
 
 // router.get("/users/:id", function(req, res) {
 //     User.findById(req.params.id, function(err, foundUser) {

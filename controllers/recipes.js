@@ -2,6 +2,7 @@
 
 const Recipe = require('../models/recipe');// This is for the database model
 const { cloudinary } = require("../cloudinary");
+const User = require('../models/user');
 
 module.exports.index = async (req, res) =>{
     let page =  parseInt(req.query.page);
@@ -13,6 +14,7 @@ module.exports.index = async (req, res) =>{
     
     //find all the Recipes .sort({ _id : -1 })
     const recipes = await Recipe.find({})
+                    .populate('author')
                     .limit(pageSize * 1)
                     .skip(skip);
     res.render('recipes/index', {recipes, page});
@@ -24,11 +26,17 @@ module.exports.renderNewForm = (req, res) =>{
 
 module.exports.createRecipe = async (req, res) =>{
    
-    const recipe = new Recipe(req.body.recipe)
+    const recipe = new Recipe(req.body.recipe);
+    const user = await User.findById(req.user._id);
+
     recipe.images =  req.files.map(f => ({ url:f.path, filename:f.filename }))
     recipe.author = req.user._id;
+    user.recipes.push(recipe);
+
     await recipe.save();
-    req.flash('success', 'Successfully made a new campground!');
+    await user.save();
+
+    req.flash('success', 'Successfully made a new Recipe!');
     res.redirect(`recipes/${recipe._id}`);
 }
 
@@ -78,6 +86,6 @@ module.exports.updateRecipe = async (req, res) => {
 module.exports.deleteRecipe = async (req, res) => {
     const { id } = req.params;
     await Recipe.findByIdAndDelete(id);
-    req.flash('success', 'Recipe Deleted');
+    req.flash('success', 'Successfully deleted');
     res.redirect('/recipes');
 }

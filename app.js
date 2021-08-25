@@ -22,6 +22,7 @@ const User = require('./models/user');
 const recipesRoutes = require('./routes/recipes');// These is the route import for recipes pages
 const reviewsRoutes = require('./routes/reviews');// These is the route import for reviews routes
 const userRoutes = require('./routes/users');
+const indexRoutes = require('./routes/index');
 
 //Mongoose Connection 
 mongoose.connect('mongodb://localhost:27017/rec-jar', {
@@ -81,18 +82,9 @@ app.use((req, res, next) => {
 
 //Routes
 app.use('/', userRoutes);
+app.use('/', indexRoutes);
 app.use('/recipes', recipesRoutes);
 app.use('/recipes/:id/reviews', reviewsRoutes);
-
-//Landing Page Route - GET
-app.get('/', (req, res) =>{
-    return res.redirect('/recipes');
-});
-
-//About us page. 
-app.get('/about', (req, res) =>{
-    return res.render('about');
-});
 
 //For every single request
 app.all('*', (req, res, next) => {

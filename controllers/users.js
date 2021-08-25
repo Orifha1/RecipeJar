@@ -2,6 +2,7 @@
 const User = require('../models/user');
 const { cloudinary } = require("../cloudinary");
 const recipes = require('../controllers/recipes'); 
+const Recipe = require('../models/recipe');// This is for the database model
 
 
 module.exports.renderRegister = (req,res) =>{
@@ -34,7 +35,6 @@ module.exports.showRecipe = async (req, res) =>{
             path: 'author'
         }
     }).populate('author');//populate author the recipe shown.
-    console.log(recipe);
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
@@ -68,6 +68,19 @@ module.exports.updateUser = async (req, res) => {
         req.flash('success', 'Your profile has been updated');
         res.redirect(`/users/${user._id}`);
   
+}
+module.exports.deleteUser = async (req, res) =>{
+    const { id } = req.params;
+
+    await User.findByIdAndDelete(id);
+    const user = await User.findById(id);
+    // await Recipe.findByIdAndDelete(user.recipes);
+    // if(!user){
+    //     req.flash('error', 'Can not find that User');
+    //     return res.redirect('/recipes');
+    // }
+    req.flash('success', 'Successfully deleted');
+    res.redirect('/recipes');
 }
 
 module.exports.Login = (req, res) => {
