@@ -14,6 +14,14 @@
     height: 30vh;
     object-fit: cover;
 }
+#profileCardImage{
+    width: 100%;
+    height: 30vh;
+    object-fit: cover;
+}
+ol, ul{
+    padding-left: 0px;
+}
 #cardRecipesPar {
     display: -webkit-box;
     max-width: 100%;
@@ -21,7 +29,17 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+#profilecardRecipesPar{
+    display: -webkit-box;
+    max-width: 100%;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 #cardRecipes{
+    height: 100%;
+}
+#recipeCard {
     height: 100%;
 }
 .aTagFooter{

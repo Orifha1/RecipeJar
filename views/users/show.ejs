@@ -25,17 +25,17 @@
 				<%= user.username %>'s recipes:
 			</h3>
 
-			<ul>
+			<ul class="justify-content-center overflow-auto">
 				<div class="row" style="width: 85%; margin: auto;">
 					<% recipes.forEach(function(recipe) { %>
-						<div class="col-md-4 mb-3" id="recipeCards">
-							<div class="card text-justify" style="width: 20rem;">
-								<img class="card-img-top" alt="" src="<%=recipe.images[0].url%>">
-								<div class="card-body overflow-hidden">
+						<div class="col-sm-6 col-md-4 mb-3 ml-1" id="recipeCard">
+							<div class="card text-justify shadow" style="width: 20rem;">
+								<img class="card-img-top img-responsive" id="profileCardImage" alt="" src="<%=recipe.images[0].url%>">
+								<div class="card-body d-flex flex-column overflow-hidden">
 									<h5 class="card-title">
 										<%= recipe.title %>
 									</h5>
-									<p class="card-text">
+									<p class="card-text" id="profilecardRecipesPar">
 										<%= recipe.description %>
 									</p>
 									<p class="card-text">
@@ -49,13 +49,13 @@
 							</div>
 						</div>
 						<% }) %>
-				</div>
+					</ul>
 				<a href="/recipes/new" class="material-icons floating-btn">add</a>
 				<div class="label-container">
 					<div class="label-text">Add Recipe</div>
 					<i class="fa fa-play label-arrow"></i>
 				</div>
-			</ul>
+			</div>
 			<!-- <ul>
 		<% recipes.forEach(function(recipe) { %>
 			<li><a href="/recipes/<%= recipe.id %>"><%= recipe.title %></a></li>
