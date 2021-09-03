@@ -5,19 +5,47 @@ const { cloudinary } = require("../cloudinary");
 const User = require('../models/user');
 
 module.exports.index = async (req, res) =>{
-    let page =  parseInt(req.query.page);
-    const pageSize=12;
-    if(!page){
-        page =1;
+    if(req.query.search) {
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        
+        let page =  parseInt(req.query.page);
+        if(page < 0) {
+            return res.redirect("back");
+        }
+        const pageSize=12;
+        if(!page){
+            page =1;
+        }
+        const skip =(page -1) * parseInt(pageSize);
+        // if(skip < 0) {
+        //     return res.redirect("back");
+        // }
+        //find all the Recipes .sort({ _id : -1 })
+        const recipes = await Recipe.find({ $or:[{title: regex},{location: regex}]})
+                        .populate('author')
+                        .limit(pageSize * 1)
+                        .skip(skip);
+
+        if(recipes.length < 1) {
+            req.flash('error', 'Can not find that Recipe');
+            return res.redirect("back");
+        }
+        res.render('recipes/index', {recipes, page});
+    }else{
+        let page =  parseInt(req.query.page);
+        const pageSize=12;
+        if(!page){
+            page =1;
+        }
+        const skip =(page -1) * parseInt(pageSize);
+        
+        //find all the Recipes .sort({ _id : -1 })
+        const recipes = await Recipe.find({})
+                        .populate('author')
+                        .limit(pageSize * 1)
+                        .skip(skip);
+        res.render('recipes/index', {recipes, page});
     }
-    const skip =(page -1) * parseInt(pageSize);
-    
-    //find all the Recipes .sort({ _id : -1 })
-    const recipes = await Recipe.find({})
-                    .populate('author')
-                    .limit(pageSize * 1)
-                    .skip(skip);
-    res.render('recipes/index', {recipes, page});
 }
 
 module.exports.renderNewForm = (req, res) =>{
@@ -89,3 +117,7 @@ module.exports.deleteRecipe = async (req, res) => {
     req.flash('success', 'Successfully deleted');
     res.redirect('/recipes');
 }
+
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
