@@ -17,5 +17,7 @@ router.get('/terms', (req, res) =>{
 router.get('/privacy', (req, res) =>{
     return res.render('privacy');
 });
-
+// router.get('/notifications', (req, res) =>{
+//     return res.render('notification');
+// });
 module.exports = router;

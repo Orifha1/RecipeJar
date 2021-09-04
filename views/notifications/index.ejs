@@ -1,0 +1,15 @@
+<% layout('layouts/boilerplate')%>
+
+<h1 class="text-center">Notifications</h1>
+<div class="d-flex justify-content-center container p-3">
+	<div class="list-group">
+		<% allNotifications.forEach(function(notification) { %>
+		<li style="list-style-type: none;">
+			<a class="notificationLinks list-group-item list-group-item-action" href="/recipes/<%= notification.recipeId %>">
+				<%= notification.username %> created a new campground %>
+			</a>
+		</li>
+		<% }); %>
+	</div>
+</div>
+
