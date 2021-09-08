@@ -18,6 +18,11 @@
 					</form>
 				</div>
 			<% } %>
+			<% if(currentUser && !currentUser._id.equals(user._id)) { %>
+				<div class="card-body">
+					<a href="/follow/<%= user.id %>"><button class="btn btn-primary btn-sm">Follow <%= user.username %></button></a>
+				</div>
+			<% } %>
 		</div>
 		<hr class="mb-3" id="profileHR">
 		<div class="mb-3">

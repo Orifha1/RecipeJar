@@ -31,6 +31,18 @@ const UserSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Review"
         }
+    ],
+    notifications: [
+    	{
+    	   type: mongoose.Schema.Types.ObjectId,
+    	   ref: 'Notification'
+    	}
+    ],
+    followers: [
+    	{
+    		type: mongoose.Schema.Types.ObjectId,
+    		ref: 'User'
+    	}
     ]
     // firstName: String,
     // lastName: String,

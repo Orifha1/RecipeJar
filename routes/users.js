@@ -14,6 +14,7 @@ const upload = multer({ storage });
 const async = require('async');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+var Notification = require("../models/notification");
 
 //Shortened routes for /register
 router.route('/register')
@@ -156,20 +157,58 @@ router.post('/reset/:token', function(req, res) {
   });
 });
 // User profile
-router.get("/users/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
-  console.log(user);
-  const recipes = await Recipe.find({}).where('author').equals(user._id);
-  res.render("users/show", {user, recipes});
-  // for(let rec in recipes){
-  //   if (`${recipes[rec].author}` == user._id){
-  //     console.log(`${recipes[rec]}`);
-  //   }
-  // }
-});
+router.get('/users/:id', catchAsync(users.showProfile)); // Show profile
 
 router.delete('/users/:id', isLoggedIn, checkProfileOwnership, catchAsync(users.deleteUser)); // Delete user
 
+router.get('/follow/:id', isLoggedIn, async function(req, res) {
+  try {
+    let user = await User.findById(req.params.id);
+    let existingUser = user.followers;
+    if(existingUser.includes(req.user._id)){
+      await User.findByIdAndUpdate(req.params.id, { $pull: { followers: req.user._id } });
+      req.flash('success', 'Successfully Unfollowed ' + user.username + '!');
+      res.redirect('/users/' + req.params.id);
+    }else{
+      user.followers.addToSet(req.user._id);
+      user.save();
+      req.flash('success', 'Successfully followed ' + user.username + '!');
+      res.redirect('/users/' + req.params.id);
+    }
+
+  } catch(err) {
+    req.flash('error', err.message);
+    res.redirect('back');
+  }
+});
+
+// view all notifications
+router.get('/notifications', isLoggedIn, async function(req, res) {
+  try {
+    let user = await User.findById(req.user._id).populate({
+      path: 'notifications',
+      options: { sort: { "_id": -1 } }
+    }).exec();
+    let allNotifications = user.notifications;
+    res.render('notifications/index', { allNotifications });
+  } catch(err) {
+    req.flash('error', err.message);
+    res.redirect('back');
+  }
+});
+
+// handle notification
+router.get('/notifications/:id', isLoggedIn, async function(req, res) {
+  try {
+    let notification = await Notification.findById(req.params.id);
+    notification.isRead = true;
+    notification.save();
+    res.redirect(`/recipes/${notification.recipeId}`);
+  } catch(err) {
+    req.flash('error', err.message);
+    res.redirect('back');
+  }
+});
 // router.get("/users/:id", function(req, res) {
 //     User.findById(req.params.id, function(err, foundUser) {
 //       if(err) {

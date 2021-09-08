@@ -3,6 +3,7 @@
 const Recipe = require('../models/recipe');// This is for the database model
 const { cloudinary } = require("../cloudinary");
 const User = require('../models/user');
+var Notification = require("../models/notification");
 
 module.exports.index = async (req, res) =>{
     if(req.query.search) {
@@ -55,8 +56,16 @@ module.exports.renderNewForm = (req, res) =>{
 module.exports.createRecipe = async (req, res) =>{
    
     const recipe = new Recipe(req.body.recipe);
-    const user = await User.findById(req.user._id);
-
+    const user = await User.findById(req.user._id).populate('followers').exec();
+    let newNotification = {
+        username: req.user.username,
+        recipeId: recipe.id
+    }
+    for(const follower of user.followers) {
+        let notification = await Notification.create(newNotification);
+        follower.notifications.push(notification);
+        follower.save();
+    }
     recipe.images =  req.files.map(f => ({ url:f.path, filename:f.filename }))
     recipe.author = req.user._id;
     user.recipes.push(recipe);
