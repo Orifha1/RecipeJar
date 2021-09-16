@@ -17,6 +17,10 @@ const UserSchema = new Schema({
         required: true, 
         unique: true
     },
+    confirmed: {
+        type: Boolean,
+        default: false,
+    },
     image: [ImageSchema],
     resetPasswordToken: String,
     resetPasswordExpires: Date,
