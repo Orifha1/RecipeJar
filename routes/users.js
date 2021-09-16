@@ -28,7 +28,28 @@ router.route('/register')
 //Shortened routes for /login
 router.route('/login')
     .get(users.renderLogin) //render login form
-    .post(passport.authenticate('local', {failureFlash: true, failureRedirect:'/login'}), users.Login) //Check login credentials.
+    .post(users.Login) //Check login credentials.
+
+router.get('/login/:token', async (req, res) => {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, async function (err, user) {
+    if (!user) {
+      req.flash('error', 'Token is invalid or has expired.');
+      return res.redirect('/recipes');
+    }
+    if (!user.confirmed) {
+      await User.findOneAndUpdate({ resetPasswordToken: req.params.token }, { $set: { "confirmed": true } });
+      console.log(user.confirmed);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      user.save();
+      req.flash('success', 'You have successfully Verified your account');
+      return res.redirect('/recipes');
+    } else {
+      req.flash("error", "An error has occurred.");
+      return res.redirect('/recipes');
+    }
+  });
+});
 
 //logout user
 router.get('/logout', users.Logout);
@@ -106,7 +127,7 @@ router.get('/reset/:token', function(req, res) {
   });
 });
 
-//teset token GET
+//Reset token Post
 router.post('/reset/:token', function(req, res) {
   async.waterfall([
     function(done) {

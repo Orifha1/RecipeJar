@@ -3,6 +3,10 @@ const User = require('../models/user');
 const { cloudinary } = require("../cloudinary");
 const recipes = require('../controllers/recipes'); 
 const Recipe = require('../models/recipe');// This is for the database model
+const async = require('async');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const passport = require('passport');
 
 
 module.exports.renderRegister = (req,res) =>{
@@ -15,13 +19,62 @@ module.exports.register = async (req, res, next) => {
         const user = new User({email, username, image});
         const registeredUser = await User.register(user, password);
         user.image =  req.files.map(f => ({ url:f.path, filename:f.filename }));
-        req.login(registeredUser, err => {
-            if(err){
-                return next(err);
+        async.waterfall([
+            function(done) {
+              crypto.randomBytes(20, function(err, buf) {
+                var token = buf.toString('hex');
+                done(err, token);
+              });
+            },
+            function(token, done) {
+              User.findOne({ email: req.body.email }, function(err, user) {
+                if (!user) {
+                  req.flash('error', 'No account with that email address exists.');
+                  return res.redirect('/recipes');
+                }
+        
+                user.resetPasswordToken = token;
+                user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        
+                user.save(function(err) {
+                  done(err, token, user);
+                });
+              });
+            },
+            function(token, user, done) {
+              var smtpTransport = nodemailer.createTransport({
+                service: 'Gmail', 
+                auth: {
+                  user: 'recipejarinfo@gmail.com',
+                  pass: process.env.GMAILPW
+                }
+              });
+              var mailOptions = {
+                to: user.email,
+                from: 'recipejarinfo@gmail.com',
+                subject: 'Email confirmation',
+                text: 'You are receiving this because you (or someone else) has registered for RecipeJar.\n\n' +
+                  'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                  'http://' + req.headers.host + '/login/' + token + '\n\n' +
+                  'If you did not request this, please ignore this email and you will not be registered to RecipeJar.\n'
+              };
+              smtpTransport.sendMail(mailOptions, function(err) {
+                //console.log('mail sent');
+                req.flash('success', 'Please confirm your email. An e-mail has been sent to ' + user.email + ' with further instructions.');
+                done(err, 'done');
+              });
             }
-            req.flash('success','Welcome to RecipeJar');
+          ], function(err) {
+            if (err) return next(err);
             res.redirect('/recipes');
-        });
+          });
+        // req.login(registeredUser, err => {
+        //     if(err){
+        //         return next(err);
+        //     }
+        //     req.flash('success','Welcome to RecipeJar');
+        //     res.redirect('/recipes');
+        // });
     }catch(e){
         req.flash('error',e.message);
         res.redirect('/register');
@@ -58,7 +111,7 @@ module.exports.renderUserEditForm = async (req, res) =>{
 module.exports.showProfile = async (req, res) => {
     const user = await User.findById(req.params.id).populate('followers').exec();
     const recipes = await Recipe.find({}).where('author').equals(user._id);
-    res.render("users/show", {user, recipes});
+    return res.render("users/show", {user, recipes});
     // for(let rec in recipes){
     //   if (`${recipes[rec].author}` == user._id){
     //     console.log(`${recipes[rec]}`);
@@ -76,7 +129,7 @@ module.exports.updateUser = async (req, res) => {
         }
         await user.save();
         req.flash('success', 'Your profile has been updated');
-        res.redirect(`/users/${user._id}`);
+        return res.redirect(`/users/${user._id}`);
   
 }
 module.exports.deleteUser = async (req, res) =>{
@@ -93,10 +146,32 @@ module.exports.deleteUser = async (req, res) =>{
     res.redirect('/recipes');
 }
 
-module.exports.Login = (req, res) => {
-    const redirectUrl = req.session.returnTo || '/recipes';
-    delete req.session.returnTo;
-    res.redirect(redirectUrl);
+module.exports.Login = (req, res, next) => {
+  
+  User.findOne({ username: req.body.username}, function(err, user) {
+    if (!user) {
+      req.flash('error', 'Can not find that User');
+      return res.redirect('/recipes');
+    }
+    if (!user.confirmed) {
+        req.flash('error','Please confirm your email to login');
+        return res.redirect('/recipes');
+    }
+    passport.authenticate('local', function(err, user) {
+      if (err) { return next(err); }
+      if (!user) { return res.redirect('/login'); }
+      
+      
+      //res.redirect(redirectUrl);
+      req.logIn(user, function(err) {
+        if (err) { return next(err); }
+        const redirectUrl = req.session.returnTo || '/recipes';
+        delete req.session.returnTo;
+        res.redirect(redirectUrl);
+      });
+    })(req, res, next);
+  });
+  
 }
 
 module.exports.Logout = (req, res) => {
