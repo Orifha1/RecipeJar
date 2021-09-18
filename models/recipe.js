@@ -16,9 +16,18 @@ ImageSchema.virtual('thumbnail').get(function () {
 const recipeSchema = new Schema({
     title: String,
     images: [ImageSchema],
-    price: Number,
-    description: String,
-    location: String,
+    ingredient: {
+        type: String,
+        default: "N/A"
+    },
+    description: {
+        type: String,
+        default: "N/A"
+    },
+    location: {
+        type: String,
+        default: "Global"
+    },
     author:{
         type: Schema.Types.ObjectId,
         ref: "User"

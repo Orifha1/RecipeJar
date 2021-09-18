@@ -54,8 +54,17 @@ module.exports.renderNewForm = (req, res) =>{
 }
 
 module.exports.createRecipe = async (req, res) =>{
-   
+
     const recipe = new Recipe(req.body.recipe);
+    if(recipe.ingredient === '') {
+        recipe.ingredient = undefined;
+    }
+    if(recipe.description === '') {
+        recipe.description  = undefined;
+    }
+    if(recipe.location === '') {
+        recipe.location = undefined;
+    }
     const user = await User.findById(req.user._id).populate('followers').exec();
     let newNotification = {
         username: req.user.username,

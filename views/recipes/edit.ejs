@@ -14,27 +14,16 @@
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
                 <input class="form-control" type="text" id="location" name="recipe[location]"
-                    value="<%=recipe.location %>" required>
+                    value="<%=recipe.location %>">
                     <div class="valid-feedback">
                         Looks good!
                       </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="price">recipe Price</label>
-                <div class="input-group">
-                    <span class="input-group-text" id="price-label">$</span>
-                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
-                        aria-describedby="price-label" name="recipe[price]" value="<%=recipe.price %>" required>
-                        <div class="valid-feedback">
-                            Looks good!
-                          </div>
-                </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="description">Description</label>
                 <textarea class="form-control" type="text" id="description"
-                    name="recipe[description]" required><%= recipe.description%></textarea>
+                    name="recipe[description]"><%= recipe.description%></textarea>
                     <div class="valid-feedback">
                         Looks good!
                       </div>
@@ -43,15 +32,41 @@
                 <label for="image" class="form-label">Add more image(s)</label>
                 <input class="form-control" type="file" id="image" name="image" multiple>
               </div>
+
+            <div class="accordion-item mb-3 border-bottom">
+                <h2 class="accordion-header" id="flush-headingThree">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                    Edit Ingredients
+                  </button>
+                </h2>
+                <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                  <div class="accordion-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="ingredient">Recipe Ingredients</label>
+                        <div class="input-group">
+                            <textarea type="text" class="form-control" id="ingredient" aria-label="ingredient"
+                                aria-describedby="ingredient-label" name="recipe[ingredient]"><%= recipe.ingredient%></textarea>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                  </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
               <div class="mb-3">
                     <% recipe.images.forEach(function(img, i) {%>
+                    <div class="mb-3">
                         <img src="<%= img.thumbnail %>" class="img-thumbnail">
                         <div class="form-check-inline">
                             <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%= img.filename %>">
+                            <label for="image-<%=i%>">Delete image</label>
                         </div>
-                        <label for="image-<%=i%>">Delete image</label>
+                    </div>
                     <% }) %>
               </div>
+              
             <div class="mb-3">
                 <button class="btn btn-info">Update recipe</button>
             </div>
