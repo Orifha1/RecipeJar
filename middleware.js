@@ -76,7 +76,6 @@ module.exports.isReviewAuthor = async(req, res, next) =>{
 }
 module.exports.validateReview = (req, res, next) => {
    
-    //console.log(results);
     const {error} = reviewSchema.validate(req.body);
 
     if(error){
