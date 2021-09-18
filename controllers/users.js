@@ -14,8 +14,17 @@ module.exports.renderRegister = (req,res) =>{
 }
 
 module.exports.register = async (req, res, next) => {
+
     try{
         const {email, username, password, image} = req.body;
+        let checker = req.body.password;
+        //pattern for password
+        let strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})')
+        //check if password matches pattern
+        if(!strongPassword.test(checker)){
+          req.flash('error', 'Password must be 8 characters including 1 uppercase letter, 1 lowercase letter and numeric characters');
+          return res.redirect('back');
+        } 
         const user = new User({email, username, image});
         const registeredUser = await User.register(user, password);
         user.image =  req.files.map(f => ({ url:f.path, filename:f.filename }));
@@ -28,14 +37,8 @@ module.exports.register = async (req, res, next) => {
             },
             function(token, done) {
               User.findOne({ email: req.body.email }, function(err, user) {
-                if (!user) {
-                  req.flash('error', 'No account with that email address exists.');
-                  return res.redirect('/recipes');
-                }
-        
                 user.resetPasswordToken = token;
                 user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-        
                 user.save(function(err) {
                   done(err, token, user);
                 });
@@ -76,7 +79,7 @@ module.exports.register = async (req, res, next) => {
         //     res.redirect('/recipes');
         // });
     }catch(e){
-        req.flash('error',e.message);
+        req.flash('error', 'Account with the username or email already exists. Please try changing your username.');
         res.redirect('/register');
     }
 }
@@ -122,7 +125,6 @@ module.exports.showProfile = async (req, res) => {
 module.exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const user = await User.findByIdAndUpdate(id, req.body.user);
-    //console.log(user);
         if (!user) {
             req.flash('error', 'Can not find that User');
             res.redirect('/recipes');

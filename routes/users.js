@@ -38,7 +38,6 @@ router.get('/login/:token', async (req, res) => {
     }
     if (!user.confirmed) {
       await User.findOneAndUpdate({ resetPasswordToken: req.params.token }, { $set: { "confirmed": true } });
-      console.log(user.confirmed);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       user.save();
@@ -106,7 +105,6 @@ router.post('/forgot', function(req, res, next) {
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        //console.log('mail sent');
         req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
         done(err, 'done');
       });
