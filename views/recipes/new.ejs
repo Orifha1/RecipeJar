@@ -4,20 +4,30 @@
     <div class="d-flex justify-content-center container p-3" id="formContent">
         <form action="/recipes" method="POST" novalidate class="validated-form border border-dark p-5 w-75 p-3 rounded" enctype="multipart/form-data">
             <div class="mb-3">
-                <label class="form-label" for="title">Title</label>
+                <label class="form-label" for="title">Title *</label>
                 <input class="form-control" type="text" id="title" name="recipe[title]" required>
                 <div class="valid-feedback">
                     Looks good!
                   </div>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="location">Location</label>
-                <input class="form-control" type="text" id="location" name="recipe[location]" required>
+                <label class="form-label" for="location">Origin of Recipe (Location)</label>
+                <input class="form-control" type="text" id="location" name="recipe[location]">
                 <div class="valid-feedback">
                     Looks good!
                   </div>
             </div>
-            
+            <div class="mb-3">
+                <label class="form-label" for="description">Description</label>
+                <textarea class="form-control" type="text" id="description" name="recipe[description]"></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                  </div>
+            </div>
+            <div class="mb-3" custom-file>
+                <label for="image" class="form-label">Add Image(s) *</label>
+                <input class="form-control" type="file" id="image" name="image" multiple required>
+              </div>
             <!-- <input type="file" name="image" id="" multiple> -->
             <!-- <div class="mb-3">
                 <label class="form-label" for="image">Image Url</label>
@@ -26,29 +36,29 @@
                     Looks good!
                   </div>
             </div> -->
-            <div class="mb-3">
-                <label class="form-label" for="price">recipe Price</label>
-                <div class="input-group">
-                    <span class="input-group-text" id="price-label">R</span>
-                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
-                        aria-describedby="price-label" name="recipe[price]" required>
-                        <div class="valid-feedback">
-                            Looks good!
-                          </div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label" for="description">Description</label>
-                <textarea class="form-control" type="text" id="description" name="recipe[description]" required></textarea>
-                <div class="valid-feedback">
-                    Looks good!
+            <div class="accordion-item mb-3 border-bottom">
+                <h2 class="accordion-header" id="flush-headingThree">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                    Add Ingredients
+                  </button>
+                </h2>
+                <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                  <div class="accordion-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="ingredient">Ingredients</label>
+                        <div class="input-group">
+                            <textarea type="text" class="form-control" id="ingredient" aria-label="ingredient"
+                                aria-describedby="ingredient-label" name="recipe[ingredient]"></textarea>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                  </div>
+                        </div>
+                    </div>        
                   </div>
-            </div>
-            <div class="mb-3" custom-file>
-                <label for="image" class="form-label">Add Image(s)</label>
-                <input class="form-control" type="file" id="image" name="image" multiple required>
+                </div>
               </div>
+           
+
             <div class="mb-3">
                 <button class="btn btn-success">Add recipe</button>
             </div>

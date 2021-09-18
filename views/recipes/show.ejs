@@ -38,7 +38,7 @@
                     <li class="list-group-item text-muted">
                         Submitted by: <a href="/users/<%= recipe.author.id %>"><%= recipe.author.username%></a>
                     </li>
-                    <li class="list-group-item">R<%= recipe.price%>/night</li>
+                    <li class="list-group-item"><%= recipe.ingredient%></li>
                 </ul>
                 <%  if( currentUser && recipe.author.equals(currentUser._id))  {%>
                 <div class="card-body">

@@ -3,10 +3,10 @@ const Joi = require('joi');
 module.exports.recipeSchema = Joi.object({
     recipe: Joi.object({
         title: Joi.string().required(),
-        price: Joi.number().required().min(0),
+        // ingredient: Joi.string(),
         // image: Joi.string().required(),
-        location: Joi.string().required(),
-        description: Joi.string().required()
+        // location: Joi.string(),
+        // description: Joi.string()
     }).required(),
     deleteImages: Joi.array()
 });

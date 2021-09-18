@@ -43,8 +43,7 @@ module.exports.checkProfileOwnership = function (req, res, next) {
     };
 };
 module.exports.validateRecipe = (req, res, next) => {
-    //console.log(results);
-    const {error} = recipeSchema.validate(req.body);
+    const {error} = recipeSchema.validate(req.body.title, req.body.image);
 
     if(error){
         const msg = error.details.map(el => el.message).join(',')
