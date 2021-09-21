@@ -34,6 +34,9 @@ module.exports.index = async (req, res) =>{
         res.render('recipes/index', {recipes, page});
     }else{
         let page =  parseInt(req.query.page);
+        if(page < 0){
+            return res.redirect("back");
+        }
         const pageSize=12;
         if(!page){
             page =1;
@@ -54,7 +57,23 @@ module.exports.renderNewForm = (req, res) =>{
 }
 
 module.exports.createRecipe = async (req, res) =>{
-
+    let fileChecker = req.files;
+    //let bodyCheck = req.files;
+    if(fileChecker.length > 4){
+        req.flash('error', 'There should be at most four images in a post.');
+        return res.redirect('back');
+    }
+    if(fileChecker.length < 1){
+        req.flash('error', 'There should be atleast one image in a post.');
+        return res.redirect('back');
+    }
+    for(let filecheck in fileChecker){
+        // let finalCheck =fileChecker[filecheck].originalname;
+        if(!fileChecker[filecheck].originalname.match(/.(jpg|jpeg|png|gif)$/i)){
+            req.flash('error', 'Image type(format) is not accepted');
+            return res.redirect('back');
+        }
+    }
     const recipe = new Recipe(req.body.recipe);
     if(recipe.ingredient === '') {
         recipe.ingredient = undefined;
@@ -65,6 +84,7 @@ module.exports.createRecipe = async (req, res) =>{
     if(recipe.location === '') {
         recipe.location = undefined;
     }
+
     const user = await User.findById(req.user._id).populate('followers').exec();
     let newNotification = {
         username: req.user.username,
@@ -76,6 +96,8 @@ module.exports.createRecipe = async (req, res) =>{
         follower.save();
     }
     recipe.images =  req.files.map(f => ({ url:f.path, filename:f.filename }))
+
+
     recipe.author = req.user._id;
     user.recipes.push(recipe);
 
@@ -113,15 +135,36 @@ module.exports.renderEditForm = async (req, res) =>{
 }
 
 module.exports.updateRecipe = async (req, res) => {
+    let fileChecker = req.files;
+    let deleteFiles =req.body.deleteImages;
+    for(let filecheck in fileChecker){
+        // let finalCheck =fileChecker[filecheck].originalname;
+        if(!fileChecker[filecheck].originalname.match(/.(jpg|jpeg|png|gif)$/i)){
+            req.flash('error', 'Image type(format) is not accepted');
+            return res.redirect('back');
+        }
+    }
     const { id } = req.params;
+    const imageCheckerValue = await Recipe.findById(id);
+    let imagesBody = imageCheckerValue.images;
+    if(imagesBody.length + fileChecker.length > 4){
+        req.flash('error', 'There should be at most four images in a post.');
+        return res.redirect('back');
+    }
+    if (req.body.deleteImages) {
+        if(imagesBody.length - deleteFiles.length == 0){
+            req.flash('error', 'There should be atleast one image. Did you want to delete the whole post?');
+            return res.redirect('back');
+        }
+    }
     const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
     const img = req.files.map(f => ({ url:f.path, filename:f.filename }));
     recipe.images.push(...img);
     if (req.body.deleteImages) {
-        for (let filename of req.body.deleteImages) {
-            await cloudinary.uploader.destroy(filename);
-        }
-        await recipe.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
+            for (let filename of req.body.deleteImages) {
+                await cloudinary.uploader.destroy(filename);
+            }
+            await recipe.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
     await recipe.save();
     req.flash('success', 'Successfully updated a recipe');
