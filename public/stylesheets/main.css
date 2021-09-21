@@ -8,12 +8,20 @@
     border: 0;
     box-shadow: 0 10px 10px -10px #8c8c8c inset;
 } */
+.formStyling{
+    margin-left: 1px;
+}
 .notificationLinks{
     text-decoration: none;
 }
 #cardImage{
     width: 100%;
     height: 30vh;
+    object-fit: cover;
+}
+#recipeCardImage{
+    width: 100%;
+    height: 50vh;
     object-fit: cover;
 }
 #profileCardImage{

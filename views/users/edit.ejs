@@ -1,8 +1,8 @@
 <% layout('layouts/boilerplate')%>
-<div class="container">
+
 <h1 class="text-center">Update Profile</h1>
-<div class="d-flex justify-content-center container p-3" id="formContent">
-<form action="/users/<%=user._id%>?_method=PUT" method="POST" class="validated-form border border-dark p-5 w-75 p-3 rounded" novalidate class="validated-form" enctype="multipart/form-data">
+<div class="row d-flex justify-content-center container p-3 formStyling" id="formContent">
+<form action="/users/<%=user._id%>?_method=PUT" method="POST" class="validated-form border border-dark p-5 p-3 rounded col-sm-12 col-md-9" novalidate class="validated-form" enctype="multipart/form-data">
     <div class="mb-3">
         <label class="form-label" for="username">Username *</label>
         <input class="form-control" type="text" id="username" name="user[username]" value="<%=user.username %>" required>
@@ -16,5 +16,4 @@
     <a href="/users/<%= user._id%>">Back To Profile</a>
 </form>
 
-</div>
 </div>
