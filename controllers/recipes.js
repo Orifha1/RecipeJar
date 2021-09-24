@@ -109,23 +109,29 @@ module.exports.createRecipe = async (req, res) =>{
 }
 
 module.exports.showRecipe = async (req, res) =>{
-    //find recipe using url paremeter id
-    const recipe = await Recipe.findById(req.params.id).populate({
-        path: 'reviews',
-        populate: {//populate author of the reviewer.
-            path: 'author'
+    try{
+        //find recipe using url paremeter id
+        const recipe = await Recipe.findById(req.params.id).populate({
+            path: 'reviews',
+            populate: {//populate author of the reviewer.
+                path: 'author'
+            }
+        }).populate('author');//populate author the recipe shown.
+        if(!recipe){
+            req.flash('error', 'Can not find that Recipe');
+            return res.redirect('/recipes');
         }
-    }).populate('author');//populate author the recipe shown.
-    if(!recipe){
+        res.render('recipes/show', {recipe});
+    }catch(err){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
     }
-    res.render('recipes/show', {recipe});
+
 }
 
 module.exports.renderEditForm = async (req, res) =>{
     const { id } = req.params;
-    const recipe = await Recipe.findById(id);
+    const recipe = await Recipe.findById(id).catch(err => {return res.redirect('/recipes')});
     //const recipe = await Recipe.findById(req.params.id);
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
@@ -158,6 +164,10 @@ module.exports.updateRecipe = async (req, res) => {
         }
     }
     const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
+    if(!recipe){
+        req.flash('error', 'Can not find that Recipe');
+        return res.redirect('/recipes');
+    }
     const img = req.files.map(f => ({ url:f.path, filename:f.filename }));
     recipe.images.push(...img);
     if (req.body.deleteImages) {

@@ -112,9 +112,19 @@ module.exports.renderUserEditForm = async (req, res) =>{
     res.render('users/edit', {user});
 }
 module.exports.showProfile = async (req, res) => {
+  try{
     const user = await User.findById(req.params.id).populate('followers').exec();
+    if(!user){
+      req.flash('error', 'Can not find that User');
+      return res.redirect('/recipes');
+    }
     const recipes = await Recipe.find({}).where('author').equals(user._id);
     return res.render("users/show", {user, recipes});
+  }catch{
+    req.flash('error', 'Can not find that User');
+    return res.redirect('/recipes');
+  }
+    
     // for(let rec in recipes){
     //   if (`${recipes[rec].author}` == user._id){
     //     console.log(`${recipes[rec]}`);
