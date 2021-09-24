@@ -18,9 +18,14 @@
 					</form>
 				</div>
 			<% } %>
-			<% if(currentUser && !currentUser._id.equals(user._id)) { %>
+			<% if(currentUser && !currentUser._id.equals(user._id) && !followingStatus) { %>
 				<div class="card-body">
 					<a href="/follow/<%= user.id %>"><button class="btn btn-primary btn-sm">Follow <%= user.username %></button></a>
+				</div>
+			<% } %>
+			<% if(currentUser && !currentUser._id.equals(user._id) && followingStatus) { %>	
+				<div class="card-body">
+					<a href="/follow/<%= user.id %>"><button class="btn btn-primary btn-sm">Unfollow <%= user.username %></button></a>
 				</div>
 			<% } %>
 		</div>

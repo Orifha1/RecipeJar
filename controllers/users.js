@@ -7,6 +7,7 @@ const async = require('async');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const passport = require('passport');
+const { isLoggedIn } = require('../middleware');
 
 
 module.exports.renderRegister = (req,res) =>{
@@ -113,14 +114,29 @@ module.exports.renderUserEditForm = async (req, res) =>{
 }
 module.exports.showProfile = async (req, res) => {
   try{
-    const user = await User.findById(req.params.id).populate('followers').exec();
-    if(!user){
-      req.flash('error', 'Can not find that User');
-      return res.redirect('/recipes');
+    if(req.isAuthenticated()){
+      const user1 = await User.findById(req.params.id);
+      const user = await User.findById(req.params.id).populate('followers').exec();
+      let existingUser = user1.followers;
+      let followingStatus = existingUser.includes(req.user._id);
+      if(!user){
+        req.flash('error', 'Can not find that User');
+        return res.redirect('/recipes');
+      }
+      const recipes = await Recipe.find({}).where('author').equals(user._id);
+      return res.render("users/show", {user, recipes, followingStatus});
+    }else{
+      let followingStatus = false;
+      const user = await User.findById(req.params.id).populate('followers').exec();
+      if(!user){
+        req.flash('error', 'Can not find that User');
+        return res.redirect('/recipes');
+      }
+      const recipes = await Recipe.find({}).where('author').equals(user._id);
+      return res.render("users/show", {user, recipes, followingStatus});
     }
-    const recipes = await Recipe.find({}).where('author').equals(user._id);
-    return res.render("users/show", {user, recipes});
-  }catch{
+
+  }catch(err){
     req.flash('error', 'Can not find that User');
     return res.redirect('/recipes');
   }
