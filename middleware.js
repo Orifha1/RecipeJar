@@ -55,13 +55,19 @@ module.exports.validateRecipe = (req, res, next) => {
 
 // Check if the person perfoming the activity is the author
 module.exports.isAuthor = async(req, res, next) =>{
-    const { id } = req.params;
-    const recipe = await Recipe.findById(id);
-    if(!recipe.author.equals(req.user._id)){
+    try{
+        const { id } = req.params;
+        const recipe = await Recipe.findById(id);
+        if(!recipe.author.equals(req.user._id)){
+            req.flash('error', 'You do not have permision to do that');
+            return res.redirect(`/recipes/${recipe._id}`);
+        }
+        next();
+    }catch(err){
         req.flash('error', 'You do not have permision to do that');
-        return res.redirect(`/recipes/${recipe._id}`);
+        return res.redirect("/recipes");
     }
-    next();
+
 }
 // Check if the person perfoming the activity is the the review author author
 module.exports.isReviewAuthor = async(req, res, next) =>{
