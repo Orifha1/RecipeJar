@@ -19,7 +19,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const MongoStore = require('connect-mongo');
-const dbUrl = 'mongodb://localhost:27017/rec-jar';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/rec-jar';
 //Routes required
 const recipesRoutes = require('./routes/recipes');// These is the route import for recipes pages
 const reviewsRoutes = require('./routes/reviews');// These is the route import for reviews routes
