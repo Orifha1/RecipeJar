@@ -122,10 +122,9 @@ app.use(
                 "data:",
                 "https://res.cloudinary.com/ducb3ne4n/", 
                 "https://images.unsplash.com",
-                "https://bootdey.com",
                 "https://cdn.pixabay.com"
             ],
-            fontSrc: ["'self'", "data:", ...fontSrcUrls],
+            fontSrc: ["'self'", ...fontSrcUrls],
         },
     })
 );
