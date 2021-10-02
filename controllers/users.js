@@ -69,8 +69,10 @@ module.exports.register = async (req, res, next) => {
               });
             }
           ], function(err) {
-            if (err) return next(err);
-            res.redirect('/recipes');
+            if (err){ 
+              req.flash('error', err);
+              return res.redirect('/recipes');
+            };
           });
         // req.login(registeredUser, err => {
         //     if(err){
