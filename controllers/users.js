@@ -66,6 +66,7 @@ module.exports.register = async (req, res, next) => {
                 //console.log('mail sent');
                 req.flash('success', 'Please confirm your email. An e-mail has been sent to ' + user.email + ' with further instructions.');
                 done(err, 'done');
+                return res.redirect('/recipes');
               });
             }
           ], function(err) {
