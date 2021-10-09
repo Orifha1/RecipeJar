@@ -8,6 +8,9 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const passport = require('passport');
 const { isLoggedIn } = require('../middleware');
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 module.exports.renderRegister = (req,res) =>{
@@ -46,28 +49,57 @@ module.exports.register = async (req, res, next) => {
               });
             },
             function(token, user, done) {
-              var smtpTransport = nodemailer.createTransport({
-                service: 'Gmail', 
-                auth: {
-                  user: 'recipejarinfo@gmail.com',
-                  pass: process.env.GMAILPW
-                }
-              });
-              var mailOptions = {
+
+              const msg = {
                 to: user.email,
-                from: 'recipejarinfo@gmail.com',
+                from: 'recipejar@outlook.com', // Use the email address or domain you verified above
                 subject: 'Email confirmation',
                 text: 'You are receiving this because you (or someone else) has registered for RecipeJar.\n\n' +
                   'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
                   'http://' + req.headers.host + '/login/' + token + '\n\n' +
-                  'If you did not request this, please ignore this email and you will not be registered to RecipeJar.\n'
+                  'If you did not request this, please ignore this email and you will not be registered to RecipeJar.\n',
+                html: '<p>You are receiving this because you (or someone else) has registered for RecipeJar.\n\n' +
+                      'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                      'http://' + req.headers.host + '/login/' + token + '\n\n' +
+                      'If you did not request this, please ignore this email and you will not be registered to RecipeJar.\n </p>',
               };
-              smtpTransport.sendMail(mailOptions, function(err) {
-                //console.log('mail sent');
-                req.flash('success', 'Please confirm your email. An e-mail has been sent to ' + user.email + ' with further instructions.');
-                done(err, 'done');
-                return res.redirect('/recipes');
-              });
+              (async () => {
+                try {
+                  await sgMail.send(msg);
+                  req.flash('success', 'Please confirm your email. An e-mail has been sent to ' + user.email + ' with further instructions.');
+                  // done(err, 'done');
+                  return res.redirect('/recipes');
+                } catch (error) {
+                  console.error(error);
+                  if (error.response) {
+                    console.error(error.response.body)
+                  }
+                  req.flash('error', 'Something went wrong, please try and register again or contact RecipeJar at recipejarinfo@gmail.com');
+                  return res.redirect('/recipes');
+                }
+              })();
+              // var smtpTransport = nodemailer.createTransport({
+              //   service: 'Gmail', 
+              //   auth: {
+              //     user: 'recipejarinfo@gmail.com',
+              //     pass: process.env.GMAILPW
+              //   }
+              // });
+              // var mailOptions = {
+              //   to: user.email,
+              //   from: 'recipejarinfo@gmail.com',
+              //   subject: 'Email confirmation',
+              //   text: 'You are receiving this because you (or someone else) has registered for RecipeJar.\n\n' +
+              //     'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+              //     'http://' + req.headers.host + '/login/' + token + '\n\n' +
+              //     'If you did not request this, please ignore this email and you will not be registered to RecipeJar.\n'
+              // };
+              // smtpTransport.sendMail(mailOptions, function(err) {
+              //   //console.log('mail sent');
+              //   req.flash('success', 'Please confirm your email. An e-mail has been sent to ' + user.email + ' with further instructions.');
+              //   done(err, 'done');
+              //   return res.redirect('/recipes');
+              // });
             }
           ], function(err) {
             if (err){ 

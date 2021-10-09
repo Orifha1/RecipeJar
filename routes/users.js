@@ -15,6 +15,9 @@ const async = require('async');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 var Notification = require("../models/notification");
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //Shortened routes for /register
 router.route('/register')
@@ -88,26 +91,34 @@ router.post('/forgot', function(req, res, next) {
       });
     },
     function(token, user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'Gmail', 
-        auth: {
-          user: 'recipejarinfo@gmail.com',
-          pass: process.env.GMAILPW
-        }
-      });
-      var mailOptions = {
+      const msg = {
         to: user.email,
-        from: 'recipejarinfo@gmail.com',
+        from: 'recipejar@outlook.com', // Use the email address or domain you verified above
         subject: 'Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
           'http://' + req.headers.host + '/reset/' + token + '\n\n' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+        html: '<p>You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+              'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+              'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+              'If you did not request this, please ignore this email and your password will remain unchanged.\n </p>',
       };
-      smtpTransport.sendMail(mailOptions, function(err) {
-        req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
-        done(err, 'done');
-      });
+      (async () => {
+        try {
+          await sgMail.send(msg);
+          req.flash('success', 'Your Password has been reset. An e-mail has been sent to ' + user.email + '.');
+          // done(err, 'done');
+          return res.redirect('/recipes');
+        } catch (error) {
+          console.error(error);
+          if (error.response) {
+            console.error(error.response.body)
+          }
+          req.flash('error', 'Something went wrong, please try again or contact RecipeJar at recipejarinfo@gmail.com');
+          return res.redirect('/recipes');
+        }
+      })();
     }
   ], function(err) {
     if (err) return next(err);
@@ -152,24 +163,30 @@ router.post('/reset/:token', function(req, res) {
       });
     },
     function(user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'Gmail', 
-        auth: {
-          user: 'recipejarinfo@gmail.com',
-          pass: process.env.GMAILPW
-        }
-      });
-      var mailOptions = {
+      const msg = {
         to: user.email,
-        from: 'recipejarinfo@gmail.com',
+        from: 'recipejar@outlook.com', // Use the email address or domain you verified above
         subject: 'Your password has been changed',
         text: 'Hello,\n\n' +
-          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+              'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n',
+        html: 'Hello,\n\n' +
+              'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n',
       };
-      smtpTransport.sendMail(mailOptions, function(err) {
-        req.flash('success', 'Success! Your password has been changed.');
-        done(err);
-      });
+      (async () => {
+        try {
+          await sgMail.send(msg);
+          req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+          // done(err, 'done');
+          return res.redirect('/recipes');
+        } catch (error) {
+          console.error(error);
+          if (error.response) {
+            console.error(error.response.body)
+          }
+          req.flash('success', 'Success! Your password has been changed.');
+          done(err);
+        }
+      })();
     }
   ], function(err) {
     res.redirect('/recipes');
