@@ -47,10 +47,11 @@
                     <a class="page-link" href="/recipes?page=<%= page - 1 %>" tabindex="-1">Previous</a>
                 </li>
               <% } %>
-
-              <li class="page-item">
-                <a class="page-link" href="/recipes?page=<%= page + 1 %>">Next</a>
-              </li>
+              <% if(recipes.length >= 12) {%>
+                <li class="page-item">
+                    <a class="page-link" href="/recipes?page=<%= page + 1 %>">Next</a>
+                </li>
+              <% } %>
             </ul>
           </nav>
     </ul>
