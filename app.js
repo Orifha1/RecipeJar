@@ -87,6 +87,7 @@ const scriptSrcUrls = [
     "https://kit.fontawesome.com",
     "https://cdnjs.cloudflare.com",
     "https://cdn.jsdelivr.net",
+    "https://cdn.tiny.cloud",
 ];
 const styleSrcUrls = [
     "https://kit-free.fontawesome.com",
@@ -96,7 +97,8 @@ const styleSrcUrls = [
     "https://fonts.googleapis.com",
     "https://use.fontawesome.com",
     "https://cdn.jsdelivr.net",
-    "https://cdnjs.cloudflare.com"
+    "https://cdnjs.cloudflare.com",
+    "https://cdn.tiny.cloud"
 ];
 const connectSrcUrls = [
     "https://api.mapbox.com",
@@ -123,7 +125,8 @@ app.use(
                 "data:",
                 "https://res.cloudinary.com/ducb3ne4n/", 
                 "https://images.unsplash.com",
-                "https://cdn.pixabay.com"
+                "https://cdn.pixabay.com",
+                "https://sp.tinymce.com"
             ],
             fontSrc: ["'self'", "data:", ...fontSrcUrls],
         },

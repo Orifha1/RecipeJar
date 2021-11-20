@@ -12,6 +12,16 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <script src="https://cdn.tiny.cloud/1/3sow7r5aq6gcvrov13o77j31a84qwc8yvq3nm1291czlhgww/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+        <script>
+            tinymce.init({
+              selector: '#ingredient',
+              menubar: false,
+              plugins: 'lists',
+              toolbar: 'undo redo | bold italic numlist bullist| alignleft alignjustify',
+              toolbar_mode: 'floating',
+            });
+          </script>
 </head>
 
 <body class="d-flex flex-column vh-100">

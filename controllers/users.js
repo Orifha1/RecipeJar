@@ -213,8 +213,8 @@ module.exports.Login = (req, res, next) => {
   
   User.findOne({ username: req.body.username}, function(err, user) {
     if (!user) {
-      req.flash('error', 'Can not find that User');
-      return res.redirect('/recipes');
+      req.flash('error', 'Your email or password might be incorrect.');
+      return res.redirect('/login');
     }
     if (!user.confirmed) {
         req.flash('error','Please confirm your email to login');
@@ -222,7 +222,10 @@ module.exports.Login = (req, res, next) => {
     }
     passport.authenticate('local', function(err, user) {
       if (err) { return next(err); }
-      if (!user) { return res.redirect('/login'); }
+      if (!user) {
+        req.flash('error', 'Your email or password might be incorrect.');
+        return res.redirect('/login'); 
+      }
       
       
       //res.redirect(redirectUrl);
