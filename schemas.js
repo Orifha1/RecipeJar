@@ -26,7 +26,7 @@ const Joi = BaseJoi.extend(extension)
 module.exports.recipeSchema = Joi.object({
     recipe: Joi.object({
         title: Joi.string().required().escapeHTML(),
-        // ingredient: Joi.string(),
+        ingredient: Joi.string().escapeHTML(),
         // image: Joi.string().required(),
         // location: Joi.string(),
         // description: Joi.string()
