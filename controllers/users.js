@@ -213,7 +213,7 @@ module.exports.Login = (req, res, next) => {
   
   User.findOne({ username: req.body.username}, function(err, user) {
     if (!user) {
-      req.flash('error', 'Your email or password might be incorrect.');
+      req.flash('error', 'Your username or password might be incorrect.');
       return res.redirect('/login');
     }
     if (!user.confirmed) {
@@ -223,7 +223,7 @@ module.exports.Login = (req, res, next) => {
     passport.authenticate('local', function(err, user) {
       if (err) { return next(err); }
       if (!user) {
-        req.flash('error', 'Your email or password might be incorrect.');
+        req.flash('error', 'Your username or password might be incorrect.');
         return res.redirect('/login'); 
       }
       
