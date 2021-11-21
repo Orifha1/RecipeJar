@@ -138,6 +138,15 @@ router.get('/reset/:token', function(req, res) {
 
 //Reset token Post
 router.post('/reset/:token', function(req, res) {
+  const {email, username, password, image} = req.body;
+
+  let checker = req.body.password;
+        //pattern for password
+  let strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})')
+  if(!strongPassword.test(checker)){
+    req.flash('error', 'Password must be 8 characters including 1 uppercase letter, 1 lowercase letter and numeric characters');
+    return res.redirect(`/reset/${req.params.token}`);
+  } 
   async.waterfall([
     function(done) {
       User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
@@ -158,7 +167,7 @@ router.post('/reset/:token', function(req, res) {
           })
         } else {
             req.flash("error", "Passwords do not match.");
-            return res.redirect('back');
+            return res.redirect(`/reset/${req.params.token}`);
         }
       });
     },
