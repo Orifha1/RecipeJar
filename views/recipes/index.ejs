@@ -15,7 +15,7 @@
     <ul class="justify-content-center overflow-auto">
             <div class="row" style="width: 85%; margin: auto;">
                 <%for(let recipe of recipes) {%>
-                <div class="col-sm-6 col-md-4 mb-3 ml-1">
+                <div class="d-flex col-sm-6 col-md-4 mb-3 ml-1">
                     <div class="card text-justify shadow" style="width: 20rem;" id="cardRecipes">
                         <img class="card-img-top img-responsive" id="cardImage" alt="" src="<%=recipe.images[0].url%>">
                         <div class="card-body d-flex flex-column overflow-hidden">
