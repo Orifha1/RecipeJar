@@ -164,7 +164,11 @@ app.use(async (req, res, next) => {
 app.use('/', userRoutes);
 app.use('/', indexRoutes);
 app.use('/recipes', recipesRoutes);
+// app.use('/recipes/:id/like', recipesRoutes);
+app.use('/', recipesRoutes);
+app.use('/unlike/:id', recipesRoutes);
 app.use('/recipes/:id/reviews', reviewsRoutes);
+
 
 //For every single request
 app.all('*', (req, res, next) => {

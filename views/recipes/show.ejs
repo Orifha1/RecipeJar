@@ -22,8 +22,33 @@
                 <% } %>
               </div>
             <div class="card mb-3">
-                
+
                 <div class="card-body">
+                    <% if(currentUser && !likeStatus) {%>
+                    <div class="container" style="text-align: right;">
+                        <!-- <%  if(currentUser)  {%>
+                        <form action="/like/<%=recipe._id%>/?_method=PUT" method="POST" novalidate>
+                            <button class="btn btn-success">Like</button>
+                        </form>
+                        <% } %> -->
+                        <span class="badge badge-primary badge-pill"><%= recipe.likes.length %></span>
+                        <a id="likeButton" style="color: rgb(255, 95, 215)" role="button" href="/like/<%=recipe._id%>">
+                            <i class="fas fa-heart"></i>
+                            Like
+                        </a>
+
+                    </div>
+                    <% } %> 
+                    <% if(currentUser && likeStatus) {%>
+                        <div class="container" style="text-align: right;">
+                        <label><%= recipe.likes.length %> | </label>
+                        <a id="likeButton" style="color: #55acee;" role="button" href="/like/<%=recipe._id%>">
+                            <i class="fas fa-heart"></i>
+                            UnLike
+                        </a>
+                        </div>
+                    <% } %>
+
                     <h5 class="card-title">
                         <%= recipe.title%>
                     </h5>
@@ -49,7 +74,7 @@
                 </div>
                 <% } %>
                 <div class="card-footer text-muted">
-                    2 days ago
+                    <%= recipecreatedDate %>
                 </div>
             </div>
          
