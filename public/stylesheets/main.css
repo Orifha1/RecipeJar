@@ -8,6 +8,9 @@
     border: 0;
     box-shadow: 0 10px 10px -10px #8c8c8c inset;
 } */
+#likeButton{
+    text-decoration: none;
+}
 .formStyling{
     margin-left: 1px;
 }

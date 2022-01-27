@@ -45,6 +45,7 @@ module.exports.index = async (req, res) =>{
         
         //find all the Recipes .sort({ _id : -1 })
         const recipes = await Recipe.find({})
+                        .sort({ _id : -1 })
                         .populate('author')
                         .limit(pageSize * 1)
                         .skip(skip);
@@ -110,18 +111,44 @@ module.exports.createRecipe = async (req, res) =>{
 
 module.exports.showRecipe = async (req, res) =>{
     try{
+        const recipe1 = await Recipe.findById(req.params.id);
+        
         //find recipe using url paremeter id
         const recipe = await Recipe.findById(req.params.id).populate({
             path: 'reviews',
             populate: {//populate author of the reviewer.
-                path: 'author'
+                path: 'author' 
             }
-        }).populate('author');//populate author the recipe shown.
+        }).populate('author')//populate author the recipe shown.
+            .populate('likes');
+
+        let dateCreated = recipe._id.getTimestamp();
+
+        year = dateCreated.getFullYear();
+        month = dateCreated.getMonth()+1;
+        dt = dateCreated.getDate();
+
+        recipecreatedDate = year+'-' + month + '-'+dt;
+
         if(!recipe){
             req.flash('error', 'Can not find that Recipe');
-            return res.redirect('/recipes');
+            return res.redirect('/recipes', );
         }
-        res.render('recipes/show', {recipe});
+        let isLoggedInUser = req.user; 
+        let existingLiker = recipe1.likes;
+        let likeStatus = false;
+
+        if(typeof isLoggedInUser === 'undefined'){
+            return res.render('recipes/show', {recipe, likeStatus});
+        }
+
+        if(existingLiker.includes(req.user._id)){
+            likeStatus = true;
+        }else{
+            likeStatus = false;
+        }
+        
+        return res.render('recipes/show', {recipe, likeStatus, recipecreatedDate});
     }catch(err){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
@@ -164,10 +191,18 @@ module.exports.updateRecipe = async (req, res) => {
         }
     }
     const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
+    
+    //if the post has already been liked by that user
+    // if(recipe.likes.filter(like => like.user.toStrng() === req.user.id).length > 0) {
+    //     return res.redirect(`/recipes/${recipe._id}`);
+    // }else{
+    //     recipe.likes.push({user: req.user.id});
+    // }
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');
     }
+    
     const img = req.files.map(f => ({ url:f.path, filename:f.filename }));
     recipe.images.push(...img);
     if (req.body.deleteImages) {
@@ -178,15 +213,18 @@ module.exports.updateRecipe = async (req, res) => {
     }
     await recipe.save();
     req.flash('success', 'Successfully updated a recipe');
-    res.redirect(`/recipes/${recipe._id}`);
+    return res.redirect(`/recipes/${recipe._id}`);
 }
-
 
 module.exports.deleteRecipe = async (req, res) => {
     const { id } = req.params;
+    const recipe = await Recipe.findById(id);
     await Recipe.findByIdAndDelete(id);
+    for (let images of recipe.images) {
+        await cloudinary.uploader.destroy(images.filename);
+    }    
     req.flash('success', 'Successfully deleted');
-    res.redirect('/recipes');
+    return res.redirect('/recipes');
 }
 
 function escapeRegex(text) {
