@@ -88,6 +88,8 @@ const scriptSrcUrls = [
     "https://cdnjs.cloudflare.com",
     "https://cdn.jsdelivr.net",
     "https://cdn.tiny.cloud",
+    "https://www.googletagmanager.com",
+    "https://www.google-analytics"
 ];
 const styleSrcUrls = [
     "https://kit-free.fontawesome.com",
