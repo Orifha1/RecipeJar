@@ -11,7 +11,7 @@
 				<div class="card-body">
 					<a class="card-link btn btn-info btn-sm" href="/users/<%=user._id%>/edit">Update Profile</a>
 					<form class="d-inline" action="/users/<%=user._id%>?_method=DELETE" method="POST">
-						<button class="btn btn-outline-danger btn-sm">Delete Profile</button>
+						<button class="btn btn-outline-danger btn-sm" onclick="return confirm('You are about to delete your profile')">Delete Profile</button>
 					</form>
 				</div>
 			<% } %>

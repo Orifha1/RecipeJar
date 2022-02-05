@@ -27,7 +27,7 @@ module.exports.register = async (req, res, next) => {
         //check if password matches pattern
         if(!strongPassword.test(checker)){
           req.flash('error', 'Password must be 8 characters including 1 uppercase letter, 1 lowercase letter and numeric characters');
-          return res.redirect('back');
+          return res.redirect('/register');
         } 
         const user = new User({email, username, image});
         const registeredUser = await User.register(user, password);
@@ -188,7 +188,7 @@ module.exports.updateUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(id, req.body.user);
         if (!user) {
             req.flash('error', 'Can not find that User');
-            res.redirect('/recipes');
+            return res.redirect('/recipes');
         }
         await user.save();
         req.flash('success', 'Your profile has been updated');

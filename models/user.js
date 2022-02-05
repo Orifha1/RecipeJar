@@ -56,7 +56,6 @@ UserSchema.plugin(passportLocalMongoose);
 
 UserSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
-        console.log(doc)
         await Review.deleteMany({
             _id: {
                 $in: doc.reviews

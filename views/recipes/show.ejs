@@ -24,6 +24,11 @@
             <div class="card mb-3">
 
                 <div class="card-body">
+                    <% if(!currentUser) {%>
+                        <div class="container" style="text-align: right;">
+                            <label class="text-muted"><%= recipe.likes.length %> | likes</label>
+                        </div>
+                    <% } %> 
                     <% if(currentUser && !likeStatus) {%>
                     <div class="container" style="text-align: right;">
                         <!-- <%  if(currentUser)  {%>
@@ -31,7 +36,7 @@
                             <button class="btn btn-success">Like</button>
                         </form>
                         <% } %> -->
-                        <span class="badge badge-primary badge-pill"><%= recipe.likes.length %></span>
+                        <label><%= recipe.likes.length %> | </label>
                         <a id="likeButton" style="color: rgb(255, 95, 215)" role="button" href="/like/<%=recipe._id%>">
                             <i class="fas fa-heart"></i>
                             Like
@@ -69,7 +74,7 @@
                 <div class="card-body">
                     <a class="card-link btn btn-info" href="/recipes/<%=recipe._id%>/edit">Edit</a>
                     <form class="d-inline" action="/recipes/<%=recipe._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-danger">Delete</button>
+                        <button class="btn btn-danger" onclick="return confirm('You are about to delete this')">Delete</button>
                     </form>
                 </div>
                 <% } %>
@@ -131,7 +136,7 @@
                         </p>
                         <%  if( currentUser && review.author.equals(currentUser._id))  {%>
                         <form action="/recipes/<%=recipe._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
-                            <button class="btn btn-sm btn-danger">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('You are about to delete this review')">
                                 Delete
                             </button>
                         </form>

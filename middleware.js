@@ -24,7 +24,7 @@ module.exports.checkProfileOwnership = function (req, res, next) {
         User.findById(req.params.id, function (err, foundUser) {
             if (err || !foundUser) {
                 req.flash('error', 'Something Went Wrong!');
-                res.redirect('/recipes');
+                return res.redirect('/recipes');
             } else {
                  //if user is logged in, do they own the profile?
                 if (foundUser.equals(req.user._id)) {
@@ -32,14 +32,14 @@ module.exports.checkProfileOwnership = function (req, res, next) {
                 } else {
                     //otherwise redirect
                     req.flash('error', "You don't have permission to do that.");
-                    res.redirect('/recipes');
+                    return res.redirect('/recipes');
                 };
             };
         });
     } else {
         //if not, redirect.
         req.flash('error', "You need to be logged in to do that.");
-        res.redirect('/recipes');
+        return res.redirect('/recipes');
     };
 };
 module.exports.validateRecipe = (req, res, next) => {
