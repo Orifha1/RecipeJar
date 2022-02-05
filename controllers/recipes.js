@@ -62,17 +62,17 @@ module.exports.createRecipe = async (req, res) =>{
     //let bodyCheck = req.files;
     if(fileChecker.length > 4){
         req.flash('error', 'There should be at most four images in a post.');
-        return res.redirect('back');
+        return res.redirect('recipes/new');
     }
     if(fileChecker.length < 1){
         req.flash('error', 'There should be atleast one image in a post.');
-        return res.redirect('back');
+        return res.redirect('recipes/new');
     }
     for(let filecheck in fileChecker){
         // let finalCheck =fileChecker[filecheck].originalname;
         if(!fileChecker[filecheck].originalname.match(/.(jpg|jpeg|png|gif)$/i)){
             req.flash('error', 'Image type(format) is not accepted');
-            return res.redirect('back');
+            return res.redirect('recipes/new');
         }
     }
     const recipe = new Recipe(req.body.recipe);
@@ -106,7 +106,7 @@ module.exports.createRecipe = async (req, res) =>{
     await user.save();
 
     req.flash('success', 'Successfully made a new Recipe!');
-    res.redirect(`recipes/${recipe._id}`);
+    return res.redirect(`recipes/${recipe._id}`);
 }
 
 module.exports.showRecipe = async (req, res) =>{
@@ -132,7 +132,7 @@ module.exports.showRecipe = async (req, res) =>{
 
         if(!recipe){
             req.flash('error', 'Can not find that Recipe');
-            return res.redirect('/recipes', );
+            return res.redirect('/recipes');
         }
         let isLoggedInUser = req.user; 
         let existingLiker = recipe1.likes;
@@ -170,34 +170,30 @@ module.exports.renderEditForm = async (req, res) =>{
 module.exports.updateRecipe = async (req, res) => {
     let fileChecker = req.files;
     let deleteFiles =req.body.deleteImages;
+    const { id } = req.params;
+    const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
+    
     for(let filecheck in fileChecker){
         // let finalCheck =fileChecker[filecheck].originalname;
         if(!fileChecker[filecheck].originalname.match(/.(jpg|jpeg|png|gif)$/i)){
             req.flash('error', 'Image type(format) is not accepted');
-            return res.redirect('back');
+            return res.redirect(`/recipes/${recipe._id}/edit`);
         }
     }
-    const { id } = req.params;
+    
     const imageCheckerValue = await Recipe.findById(id);
     let imagesBody = imageCheckerValue.images;
     if(imagesBody.length + fileChecker.length > 4){
         req.flash('error', 'There should be at most four images in a post.');
-        return res.redirect('back');
+        return res.redirect(`/recipes/${recipe._id}/edit`);
     }
     if (req.body.deleteImages) {
         if(imagesBody.length - deleteFiles.length == 0){
             req.flash('error', 'There should be atleast one image. Did you want to delete the whole post?');
-            return res.redirect('back');
+            return res.redirect(`/recipes/${recipe._id}/edit`);
         }
     }
-    const recipe = await Recipe.findByIdAndUpdate(id, { ...req.body.recipe });
     
-    //if the post has already been liked by that user
-    // if(recipe.likes.filter(like => like.user.toStrng() === req.user.id).length > 0) {
-    //     return res.redirect(`/recipes/${recipe._id}`);
-    // }else{
-    //     recipe.likes.push({user: req.user.id});
-    // }
     if(!recipe){
         req.flash('error', 'Can not find that Recipe');
         return res.redirect('/recipes');

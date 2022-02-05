@@ -28,13 +28,11 @@ router.get('/like/:id',isLoggedIn, async (req, res) => {
     if(existingLiker.includes(req.user._id)){
         await Recipe.findByIdAndUpdate(req.params.id, {$pull: {likes: req.user._id} });
         req.flash('success', 'Successfully unliked ' + recipe.title + '!');
-        console.log("The likes: ", existingLiker);
         return res.redirect(`/recipes/${recipe._id}`);
     }else{
         recipe.likes.addToSet(req.user._id);
         recipe.save();
         req.flash('success', 'Successfully liked ' + recipe.title + '!');
-        console.log("The likes: ", existingLiker);
         return res.redirect(`/recipes/${recipe._id}`);
     }
     //let recipeArray = recipe.likes;

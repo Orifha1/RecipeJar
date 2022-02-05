@@ -152,7 +152,7 @@ router.post('/reset/:token', function(req, res) {
       User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
         if (!user) {
           req.flash('error', 'Password reset token is invalid or has expired.');
-          return res.redirect('back');
+          return res.redirect('/recipes');
         }
         if(req.body.password === req.body.confirm) {
           user.setPassword(req.body.password, function(err) {
@@ -198,7 +198,7 @@ router.post('/reset/:token', function(req, res) {
       })();
     }
   ], function(err) {
-    res.redirect('/recipes');
+    return res.redirect('/recipes');
   });
 });
 // User profile
@@ -213,17 +213,17 @@ router.get('/follow/:id', isLoggedIn, async function(req, res) {
     if(existingUser.includes(req.user._id)){
       await User.findByIdAndUpdate(req.params.id, { $pull: { followers: req.user._id } });
       req.flash('success', 'Successfully Unfollowed ' + user.username + '!');
-      res.redirect('/users/' + req.params.id);
+      return res.redirect('/users/' + req.params.id);
     }else{
       user.followers.addToSet(req.user._id);
       user.save();
       req.flash('success', 'Successfully followed ' + user.username + '!');
-      res.redirect('/users/' + req.params.id);
+      return res.redirect('/users/' + req.params.id);
     }
 
   } catch(err) {
     req.flash('error', err.message);
-    res.redirect('back');
+    return res.redirect('/recipes');
   }
 });
 
@@ -238,7 +238,7 @@ router.get('/notifications', isLoggedIn, async function(req, res) {
     res.render('notifications/index', { allNotifications });
   } catch(err) {
     req.flash('error', err.message);
-    res.redirect('back');
+    return res.redirect('/recipes');
   }
 });
 
@@ -248,10 +248,10 @@ router.get('/notifications/:id', isLoggedIn, async function(req, res) {
     let notification = await Notification.findById(req.params.id);
     notification.isRead = true;
     notification.save();
-    res.redirect(`/recipes/${notification.recipeId}`);
+    return res.redirect(`/recipes/${notification.recipeId}`);
   } catch(err) {
     req.flash('error', err.message);
-    res.redirect('back');
+    return res.redirect('/recipes');
   }
 });
 // router.get("/users/:id", function(req, res) {
