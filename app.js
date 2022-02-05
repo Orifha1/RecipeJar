@@ -106,6 +106,7 @@ const connectSrcUrls = [
     "https://api.mapbox.com",
     "https://*.tiles.mapbox.com",
     "https://events.mapbox.com",
+    "https://www.google-analytics.com"
 ];
 const fontSrcUrls = [
     "https://fonts.gstatic.com",
